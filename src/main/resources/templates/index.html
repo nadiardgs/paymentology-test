@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>Transaction Compare</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {}
+
+		/* Style the header */
+		.header {
+			grid-area: header;
+			padding: 30px;
+			text-align: left;
+			font-size: 16px;
+		}
+
+		/* The grid container */
+		.grid-container {
+			display: grid;
+			grid-template-areas:
+				'header header header header header header'
+				'left left middle middle right right'
+				'footer footer footer footer footer footer';
+		}
+
+		.left,
+		.middle {
+			padding: 10px;
+		}
+
+		/* Style the left column */
+		.left {
+			grid-area: left;
+		}
+
+		/* Style the middle column */
+		.middle {
+			grid-area: middle;
+		}
+
+		/* Style the footer */
+		.footer {
+			grid-area: footer;
+			padding: 10px;
+		}
+
+		/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+		@media (max-width: 600px) {
+			.grid-container {
+				grid-template-areas:
+					'header header header header header header'
+					'left left left left left left'
+					'middle middle middle middle middle middle'
+					'footer footer footer footer footer footer';
+			}
+		}
+	</style>
+
+	<head>
+
+	<body>
+		<p></p>
+		<div class="grid-container">
+			<div class="header">
+				Specify files to compare: <p></p>
+				<form method="post" action="/index" enctype="multipart/form-data">
+					<p th:text="${message}" th:if="${message ne null}" class="alert alert-primary"></p>
+					<input type="file" name="file1" />
+					<input type="file" name="file2" />
+					<input type="submit" id="submitButton" value="Compare and generate report">
+				</form>
+			</div>
+
+
+			<div class="left">
+			<p th:each="file : ${fileData}">
+				File: <span th:text="${file.fileName}"></span>
+				<br>
+				Total records: <span th:text="${file.fileTotalRecords}"></span>
+				<br>
+				Matching records: <span th:text="${file.fileTotalMatchingRecords}"></span>
+				<br>
+				Unmatching records: <span th:text="${file.fileTotalUnmatchingRecords}"></span>
+			</p>
+			</div>
+		
+			<div class="middle">
+			
+			</div>
+
+			<div class="footer">
+			</div>
+		</div>
+	</body>
+
+</html>
