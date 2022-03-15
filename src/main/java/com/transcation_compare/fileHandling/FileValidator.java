@@ -1,7 +1,6 @@
 package com.transcation_compare.fileHandling;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -72,65 +71,6 @@ public class FileValidator
 		
 		return data;
 	}
-	
-	public HashMap<String, String> convertCsvToHashMap(InputStream inputStream) {
-        BufferedReader bf = null;
-        HashMap<String, String> data = new HashMap<>();
-        String line;
-        
-        try {
-            bf = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            
-            while ((line = bf.readLine()) != null) 
-            {
-                List<String> lineList = getLineAsList(line);
-
-                String transactionId = "";
-                
-                if (lineList.size() >= 8) 
-                {
-                	transactionId = lineList.get(5);
-                	
-                    if (transactionId == null) 
-                    {
-                        return new HashMap<String, String>();
-                    }
-                    
-                    data.put(transactionId, lineList.get(7));
-                } 
-                else 
-                {
-                	data.put(transactionId, null);
-                }
-            }
-
-        } 
-        
-        catch (IOException e) 
-        {
-            throw new RuntimeException("Reading CSV failed.", e);
-        } 
-        
-        catch (UnsupportedOperationException uoe) 
-        {
-            throw new RuntimeException("Operation not supported.", uoe);   
-        } 
-        
-        finally 
-        {
-            if (bf != null)
-                try 
-            {
-                bf.close();
-            } 
-            catch (IOException e) 
-            {
-                throw new RuntimeException("Closing CSV reader failed.", e);
-            }
-        }
-
-        return data;
-    }
 	
 	public FileData addData(String fileName, List<String> fileData, List<String> fileList)
 	{

@@ -33,7 +33,8 @@ public class IndexController {
 	private List<UnmatchedReport> unmatchedReports = new ArrayList<UnmatchedReport>();
 	
 	@GetMapping("/")
-	public String homepage() {
+	public String homepage() 
+	{
 		return INDEX;
 	}
 
@@ -48,7 +49,8 @@ public class IndexController {
 	
 	@PostMapping("/index")
 	public String handlePostRequest(@RequestParam("file1") MultipartFile file1, @RequestParam("file2") MultipartFile file2,
-			RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes) 
+	{
 		
 		_fileValidator = new FileValidator();
 		
