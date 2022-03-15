@@ -86,13 +86,13 @@ public class IndexController {
 			
 			if (firstFileHashMap.isEmpty())
 			{
-				redirectAttributes.addFlashAttribute(String.format(errorMessage, firstFileName));
+				redirectAttributes.addFlashAttribute("message", String.format(errorMessage, firstFileName));
 				return REDIRECT;
 			}
 			
 			else if (secondFileHashMap.isEmpty())
 			{
-				redirectAttributes.addFlashAttribute(String.format(errorMessage, secondFileName));
+				redirectAttributes.addFlashAttribute("message", String.format(errorMessage, secondFileName));
 				return REDIRECT;
 			}
 

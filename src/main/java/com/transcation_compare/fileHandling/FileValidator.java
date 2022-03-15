@@ -63,9 +63,13 @@ public class FileValidator
                 
                 data.put(transactionId, lineList.get(7));
             } 
-            else 
+            else if (!transactionId.isBlank())
             {
             	data.put(transactionId, null);
+            }
+            else
+            {
+            	return new HashMap<String, String>();
             }
         }
 		
