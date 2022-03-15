@@ -1,4 +1,4 @@
-package com.TransactionCompare.model;
+package com.transcation_compare.model;
 
 import java.util.List;
 
@@ -14,6 +14,16 @@ public class FileData
 	
 	private String fileUnmatchingRecordsPositions;
 	
+	private List<String> fileList;
+	
+	public List<String> getFileList() {
+		return fileList;
+	}
+
+	public void setFileList(List<String> fileList) {
+		this.fileList = fileList;
+	}
+
 	private List<UnmatchedReport> unmatchedReports;
 
 	public List<UnmatchedReport> getUnmatchedReports() {

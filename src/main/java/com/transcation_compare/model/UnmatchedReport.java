@@ -1,4 +1,4 @@
-package com.TransactionCompare.model;
+package com.transcation_compare.model;
 
 public class UnmatchedReport 
 {

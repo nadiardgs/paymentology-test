@@ -1,4 +1,4 @@
-package com.TransactionCompare;
+package com.transaction_compare;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

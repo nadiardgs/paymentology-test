@@ -79,19 +79,25 @@
 
 
 			<div class="left">
-			<p th:each="file : ${fileData}">
-				File: <span th:text="${file.fileName}"></span>
-				<br>
-				Total records: <span th:text="${file.fileTotalRecords}"></span>
-				<br>
-				Matching records: <span th:text="${file.fileTotalMatchingRecords}"></span>
-				<br>
-				Unmatching records: <span th:text="${file.fileTotalUnmatchingRecords}"></span>
-			</p>
+				<p th:each="file : ${fileData}">
+					File: <span th:text="${file.fileName}"></span>
+					<br>
+					Total records: <span th:text="${file.fileTotalRecords}"></span>
+					<br>
+					Matching records: <span th:text="${file.fileTotalMatchingRecords}"></span>
+					<br>
+					Unmatching records: <span th:text="${file.fileTotalUnmatchingRecords}"></span>
+				</p>
 			</div>
-		
+
 			<div class="middle">
-			
+				<p th:each="report : ${unmatchedReport}">
+
+					Date: <span th:text="${report.date}"></span>
+					Amount: <span th:text="${report.amount}"></span>
+					Description: <span th:text="${report.description}"></span>
+
+				</p>
 			</div>
 
 			<div class="footer">

@@ -1,4 +1,4 @@
-package com.TransactionCompare.rest;
+package com.transcation_compare.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.TransactionCompare.fileHandling.*;
-import com.TransactionCompare.model.FileData;
-import com.TransactionCompare.model.UnmatchedReport;
+
+import com.transcation_compare.fileHandling.*;
+import com.transcation_compare.model.FileData;
+import com.transcation_compare.model.UnmatchedReport;
 
 @Controller
 public class IndexController {
@@ -29,6 +30,7 @@ public class IndexController {
 	private FileMatcher _fileMatcher;
 
 	private List<FileData> fileData = new ArrayList<FileData>();
+	private List<UnmatchedReport> unmatchedReports = new ArrayList<UnmatchedReport>();
 	
 	@GetMapping("/")
 	public String homepage() {
@@ -39,6 +41,8 @@ public class IndexController {
 	public String handleGetRequest(Model model)
 	{
 		model.addAttribute("fileData", fileData);
+		model.addAttribute("umatchedReports", unmatchedReports);
+		
 		return INDEX;
 	}
 	
@@ -69,9 +73,12 @@ public class IndexController {
 		{
 			InputStream firstFileIS = file1.getInputStream();
 			InputStream secondFileIS = file2.getInputStream();
+			
+			List<String> firstFileList = _fileValidator.getInputStreamAsList(firstFileIS);
+			List<String> secondFileList = _fileValidator.getInputStreamAsList(secondFileIS);
 
-			HashMap<String, String> firstFileHashMap = _fileValidator.convertCsvToHashMap(firstFileIS);
-			HashMap<String, String> secondFileHashMap = _fileValidator.convertCsvToHashMap(secondFileIS);
+			HashMap<String, String> firstFileHashMap = _fileValidator.getListAsHashMap(firstFileList);
+			HashMap<String, String> secondFileHashMap = _fileValidator.getListAsHashMap(secondFileList);
 
 			String errorMessage = "Error in file %s: All rows must have data for the column TransactionID";
 			
@@ -80,27 +87,36 @@ public class IndexController {
 				redirectAttributes.addFlashAttribute(String.format(errorMessage, firstFileName));
 				return REDIRECT;
 			}
+			
 			else if (secondFileHashMap.isEmpty())
 			{
 				redirectAttributes.addFlashAttribute(String.format(errorMessage, secondFileName));
 				return REDIRECT;
 			}
 
-			List<String> firstXSecond = _fileMatcher.matchHashMaps(firstFileHashMap, secondFileHashMap, firstFileIS);
-			List<String> secondXFirst = _fileMatcher.matchHashMaps(secondFileHashMap, firstFileHashMap, secondFileIS);
+			List<String> firstXSecond = _fileMatcher.matchHashMaps(firstFileHashMap, secondFileHashMap);
+			List<String> secondXFirst = _fileMatcher.matchHashMaps(secondFileHashMap, firstFileHashMap);
 			
-			fileData = addFileData(firstFileName, firstXSecond, secondFileName, secondXFirst);
 			
-			for (FileData file : fileData)
+			//I only need to get a report of unmatched data if exists any unmatched data		
+			if (convertToInteger(firstXSecond.get(2)) > 0 && convertToInteger(firstXSecond.get(2)) > 0)
 			{
-				String unmatchingRecordsPositions = file.getFileUnmatchingRecordsPositions();
+				fileData = _fileValidator.addFileData(firstFileName, firstXSecond, firstFileList, 
+						secondFileName, secondXFirst, secondFileList);
 				
-				List<Integer> lstRecordsPositions = 
-					    Arrays.stream(unmatchingRecordsPositions.split(";")).map(Integer::parseInt).collect(Collectors.toList());
-				
-				List<UnmatchedReport> unmatchedReport = _fileMatcher.getUnmatchedReport(lstRecordsPositions, file.getFileName());
-				
-				file.setUnmatchedReports(unmatchedReport);
+				for (FileData file : fileData)
+				{					
+					String unmatchingRecordsPositions = file.getFileUnmatchingRecordsPositions();
+					
+					List<Integer> lstRecordsPositions = Arrays.stream(unmatchingRecordsPositions.split(";"))
+							.mapToInt(Integer::parseInt)
+							.boxed()
+							.collect(Collectors.toList());
+					
+					unmatchedReports = _fileMatcher.getUnmatchedReportList(file.getFileList(), lstRecordsPositions);
+					
+					file.setUnmatchedReports(unmatchedReports);
+				}
 			}
 		} 
 		
@@ -113,29 +129,10 @@ public class IndexController {
 		return "redirect:/index";
 	}
 
-	public FileData addData(String fileName, List<String> fileData)
+	public Integer convertToInteger(String string)
 	{
-		FileData file = new FileData();
-		
-		file.setFileName(fileName);
-		file.setFileTotalRecords(fileData.get(0));
-		file.setFileTotalMatchingRecords(fileData.get(1));
-		file.setFileTotalUnmatchingRecords(fileData.get(2));
-		file.setFileUnmatchingRecordsPositions(fileData.get(3));
-		
-		return file;
+		return Integer.parseInt(string);
 	}
 	
-	public List<FileData> addFileData(String firstFileName, List<String> firstFileData, String secondFileName, List<String> secondFileData)
-	{
-		List<FileData> fileData = new ArrayList<FileData>();
-		
-		FileData firstFile = addData(firstFileName, firstFileData);
-		fileData.add(firstFile);
-		
-		FileData secondFile = addData(secondFileName, secondFileData);
-		fileData.add(secondFile);
-		
-		return fileData;
-	}
+	
 }

@@ -1,4 +1,4 @@
-package com.TransactionCompare.fileHandling;
+package com.transcation_compare.fileHandling;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,23 +13,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.TransactionCompare.model.UnmatchedReport;
+import com.transcation_compare.model.UnmatchedReport;
 
 public class FileMatcher 
 {
 	public FileValidator _fileValidator = new FileValidator();
 	
-	public List<String> matchHashMaps(HashMap<String, String> firstFile, HashMap<String, String> secondFile, InputStream fileIS)
+	/*
+	 * This method returns a List<String> containing a report for the given file, as follows:
+	 * List position 0: number of transactions
+	 * List position 1: number of matching transactions
+	 * List position 2: number of unmatched transactions
+	 * List position 3: a string with each position where an unmatched transaction was found in the file, separated by ";"
+	 * (will be later read to get the unmatched report)
+	 * */
+	public List<String> matchHashMaps(HashMap<String, String> firstFile, HashMap<String, String> secondFile)
     {
         List<String> listMatchAndUnmatch = new ArrayList<>();
         Integer matchCount = 0;
         Integer unmatchCount = 0;
-        Integer count = 0;
+        Integer unmatchedPosition = 0;
         List<Integer> lstUnmatchedPositions = new ArrayList<Integer>();
         
         for (Map.Entry<String, String> set : firstFile.entrySet())
         {
-        	count++;
+        	unmatchedPosition++;
         	
             if (secondFile.entrySet().contains(set))
             {
@@ -46,7 +54,7 @@ public class FileMatcher
                     unmatchCount++;
                     
                     //for each unmatched element, get its position in the file
-                    lstUnmatchedPositions.add(count);
+                    lstUnmatchedPositions.add(unmatchedPosition);
                 }
             }
         }
@@ -63,6 +71,35 @@ public class FileMatcher
         return listMatchAndUnmatch;
     }
 	
+	/*
+	 * Accept the list with the file data and the list of positions of unmatched transactions
+	 * And return a list of unmatched reports
+	 * */
+	public List<UnmatchedReport> getUnmatchedReportList(List<String> fileAsList, List<Integer> unmatchedPositions)
+	{
+		
+		UnmatchedReport unmatchedReport;
+		
+		List<UnmatchedReport> unmatchedReportList = new ArrayList<UnmatchedReport>();
+		
+		for (Integer unmatchedPosition : unmatchedPositions)
+		{
+			String line = fileAsList.get(unmatchedPosition);
+			
+			List<String> lineList = _fileValidator.getLineAsList(line);
+			
+			unmatchedReport = new UnmatchedReport();
+			
+			unmatchedReport.setDate(lineList.get(1));
+    		unmatchedReport.setAmount(lineList.get(2));
+    		unmatchedReport.setDescription(lineList.get(3));
+    		
+    		unmatchedReportList.add(unmatchedReport);
+		}
+		
+		return unmatchedReportList;
+	}
+	
 	
 	public List<UnmatchedReport> getUnmatchedReport(List<Integer> keys, String fileName)
 	{
@@ -78,7 +115,7 @@ public class FileMatcher
 			{
 				String line = Files.readAllLines(Paths.get(fileName)).get(key);
 				
-				List<String>lineList = _fileValidator.lineToList(line);
+				List<String>lineList = _fileValidator.getLineAsList(line);
 				
 				unmatchedReport = new UnmatchedReport();
 				
@@ -114,7 +151,7 @@ public class FileMatcher
             
             while ((line = bf.readLine()) != null) 
             {
-            	List<String> lineList = _fileValidator.lineToList(line);
+            	List<String> lineList = _fileValidator.getLineAsList(line);
             	
             	if (lineList.get(5).toLowerCase().equals(key.toLowerCase()))
             	{

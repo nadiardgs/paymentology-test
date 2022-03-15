@@ -1,4 +1,4 @@
-package com.TransactionCompare;
+package com.transcation_compare;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
