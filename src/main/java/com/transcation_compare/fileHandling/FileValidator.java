@@ -60,7 +60,7 @@ public class FileValidator
                 
                 data.put(transactionId, lineList.get(7));
             } 
-            else if (!transactionId.isBlank())
+            else if (!transactionId.isEmpty())
             {
             	data.put(transactionId, null);
             }
