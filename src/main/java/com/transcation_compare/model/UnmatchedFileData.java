@@ -1,6 +1,6 @@
 package com.transcation_compare.model;
 
-public class UnmatchedReport 
+public class UnmatchedFileData 
 {
 	private String date;
 	

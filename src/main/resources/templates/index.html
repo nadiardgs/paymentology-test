@@ -91,8 +91,8 @@
 			</div>
 
 			<div class="middle">
-				<p th:each="report : ${unmatchedReport}">
 
+				<p th:each="report : ${umatchedReports}">
 					Date: <span th:text="${report.date}"></span>
 					<br>
 					Amount: <span th:text="${report.amount}"></span>
@@ -101,6 +101,7 @@
 					<br>
 
 				</p>
+				<br> <br>
 			</div>
 
 			<div class="footer">

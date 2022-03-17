@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.transcation_compare.fileHandling.*;
 import com.transcation_compare.model.FileData;
-import com.transcation_compare.model.UnmatchedReport;
+import com.transcation_compare.model.UnmatchedFileData;
 
 @Controller
 public class IndexController {
@@ -30,7 +30,7 @@ public class IndexController {
 	private FileMatcher _fileMatcher;
 
 	private List<FileData> fileData = new ArrayList<FileData>();
-	private List<UnmatchedReport> unmatchedReports = new ArrayList<UnmatchedReport>();
+	private List<UnmatchedFileData> unmatchedFileDatas = new ArrayList<UnmatchedFileData>();
 	
 	@GetMapping("/")
 	public String homepage() 
@@ -42,7 +42,7 @@ public class IndexController {
 	public String handleGetRequest(Model model)
 	{
 		model.addAttribute("fileData", fileData);
-		model.addAttribute("umatchedReports", unmatchedReports);
+		model.addAttribute("umatchedReports", unmatchedFileDatas);
 		
 		return INDEX;
 	}
@@ -96,28 +96,21 @@ public class IndexController {
 				return REDIRECT;
 			}
 
-			List<String> firstXSecond = _fileMatcher.matchHashMaps(firstFileHashMap, secondFileHashMap);
-			List<String> secondXFirst = _fileMatcher.matchHashMaps(secondFileHashMap, firstFileHashMap);
+			FileData firstFileData = _fileMatcher.matchHashMapsAsFileData(firstFileHashMap, firstFileList, secondFileHashMap);
+			FileData secondFileData = _fileMatcher.matchHashMapsAsFileData(secondFileHashMap, secondFileList, firstFileHashMap);
 			
+			firstFileData.setFileName(firstFileName);
+			secondFileData.setFileName(secondFileName);
+			
+			fileData.add(firstFileData);
+			fileData.add(secondFileData);
 			
 			//I only need to get a report of unmatched data if exists any unmatched data		
-			if (convertToInteger(firstXSecond.get(2)) > 0 && convertToInteger(firstXSecond.get(2)) > 0)
-			{
-				fileData = _fileValidator.addFileData(firstFileName, firstXSecond, firstFileList, 
-						secondFileName, secondXFirst, secondFileList);
-				
+			if (firstFileData.getFileTotalUnmatchingRecords() > 0 || secondFileData.getFileTotalUnmatchingRecords() > 0)
+			{				
 				for (FileData file : fileData)
-				{					
-					String unmatchingRecordsPositions = file.getFileUnmatchingRecordsPositions();
-					
-					List<Integer> lstRecordsPositions = Arrays.stream(unmatchingRecordsPositions.split(";"))
-							.mapToInt(Integer::parseInt)
-							.boxed()
-							.collect(Collectors.toList());
-					
-					unmatchedReports = _fileMatcher.getUnmatchedReportList(file.getFileList(), lstRecordsPositions);
-					
-					file.setUnmatchedReports(unmatchedReports);
+				{	
+					unmatchedFileDatas.addAll(file.getUnmatchedFileDatas());
 				}
 			}
 		} 

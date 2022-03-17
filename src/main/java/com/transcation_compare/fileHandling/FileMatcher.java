@@ -13,32 +13,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.transcation_compare.model.UnmatchedReport;
+import com.transcation_compare.model.FileData;
+import com.transcation_compare.model.UnmatchedFileData;
+import com.transcation_compare.model.UnmatchedFileData;
 
 public class FileMatcher 
 {
 	public FileValidator _fileValidator = new FileValidator();
 	
-	/*
-	 * This method returns a List<String> containing a report for the given file, as follows:
-	 * List position 0: number of transactions
-	 * List position 1: number of matching transactions
-	 * List position 2: number of unmatched transactions
-	 * List position 3: a string with each position where an unmatched transaction was found in the file, separated by ";"
-	 * (will be later read to get the unmatched report)
-	 * */
-	public List<String> matchHashMaps(HashMap<String, String> firstFile, HashMap<String, String> secondFile)
+	public FileData matchHashMapsAsFileData(HashMap<String, String> firstFile, List<String> firstFileList, HashMap<String, String> secondFile)
     {
-        List<String> listMatchAndUnmatch = new ArrayList<>();
+        FileData fileData;
+        
         Integer matchCount = 0;
+        
         Integer unmatchCount = 0;
-        Integer unmatchedPosition = 0;
-        List<Integer> lstUnmatchedPositions = new ArrayList<Integer>();
+        
+        UnmatchedFileData unmatchedFileData;
+        
+        List<UnmatchedFileData> lstUnmatchedFileData = new ArrayList<UnmatchedFileData>();
         
         for (Map.Entry<String, String> set : firstFile.entrySet())
         {
-        	unmatchedPosition++;
-        	
             if (secondFile.entrySet().contains(set))
             {
                 matchCount++;
@@ -51,36 +47,63 @@ public class FileMatcher
                 }
                 else
                 {
-                    unmatchCount++;
-                    
-                    //for each unmatched element, get its position in the file
-                    lstUnmatchedPositions.add(unmatchedPosition);
+                	unmatchedFileData = findUnmatchedFileDataByKey(firstFileList, set.getKey());
+                	lstUnmatchedFileData.add(unmatchedFileData);
+                	unmatchCount++;
                 }
             }
         }
         
-        listMatchAndUnmatch.add(String.valueOf(firstFile.size()));
-        listMatchAndUnmatch.add(matchCount.toString());
-        listMatchAndUnmatch.add(unmatchCount.toString());
+        fileData = new FileData();
         
-        String numberString = lstUnmatchedPositions.stream().map(String::valueOf)
-        	    .collect(Collectors.joining(";"));
+        fileData.setFileTotalMatchingRecords(matchCount);
         
-        listMatchAndUnmatch.add(numberString);
+        fileData.setFileTotalUnmatchingRecords(unmatchCount);
         
-        return listMatchAndUnmatch;
+        fileData.setUnmatchedFileDatas(lstUnmatchedFileData);
+        
+        fileData.setFileTotalRecords(firstFileList.size());
+        
+        return fileData;
     }
+	
+	public UnmatchedFileData findUnmatchedFileDataByKey(List<String> fileAsList, String key)
+	{	
+		_fileValidator = new FileValidator();
+		
+		UnmatchedFileData unmatchedFileData;
+		
+		List<String> fileLine = new ArrayList<String>();
+		
+		for (String line : fileAsList)
+		{
+			fileLine = _fileValidator.getLineAsList(line);
+			
+			if (fileLine.get(5).equals(key))
+			{
+				unmatchedFileData  = new UnmatchedFileData();
+				
+				unmatchedFileData.setDate(fileLine.get(1));
+				unmatchedFileData.setAmount(fileLine.get(2));
+				unmatchedFileData.setDescription(fileLine.get(3));
+				
+				return unmatchedFileData;
+			}
+		}
+		
+		return new UnmatchedFileData();
+	}
 	
 	/*
 	 * Accept the list with the file data and the list of positions of unmatched transactions
 	 * And return a list of unmatched reports
 	 * */
-	public List<UnmatchedReport> getUnmatchedReportList(List<String> fileAsList, List<Integer> unmatchedPositions)
+	public List<UnmatchedFileData> getUnmatchedFileDataList(List<String> fileAsList, List<Integer> unmatchedPositions)
 	{
 		
-		UnmatchedReport unmatchedReport;
+		UnmatchedFileData UnmatchedFileData;
 		
-		List<UnmatchedReport> unmatchedReportList = new ArrayList<UnmatchedReport>();
+		List<UnmatchedFileData> UnmatchedFileDataList = new ArrayList<UnmatchedFileData>();
 		
 		for (Integer unmatchedPosition : unmatchedPositions)
 		{
@@ -88,26 +111,26 @@ public class FileMatcher
 			
 			List<String> lineList = _fileValidator.getLineAsList(line);
 			
-			unmatchedReport = new UnmatchedReport();
+			UnmatchedFileData = new UnmatchedFileData();
 			
-			unmatchedReport.setDate(lineList.get(1));
-    		unmatchedReport.setAmount(lineList.get(2));
-    		unmatchedReport.setDescription(lineList.get(3));
+			UnmatchedFileData.setDate(lineList.get(1));
+    		UnmatchedFileData.setAmount(lineList.get(2));
+    		UnmatchedFileData.setDescription(lineList.get(3));
     		
-    		unmatchedReportList.add(unmatchedReport);
+    		UnmatchedFileDataList.add(UnmatchedFileData);
 		}
 		
-		return unmatchedReportList;
+		return UnmatchedFileDataList;
 	}
 	
 	
-	public List<UnmatchedReport> getUnmatchedReport(List<Integer> keys, String fileName)
+	public List<UnmatchedFileData> getUnmatchedFileData(List<Integer> keys, String fileName)
 	{
 		_fileValidator = new FileValidator();
 		
-		UnmatchedReport unmatchedReport;
+		UnmatchedFileData UnmatchedFileData;
 		
-		List<UnmatchedReport> unmatchedReportList = new ArrayList<UnmatchedReport>();
+		List<UnmatchedFileData> UnmatchedFileDataList = new ArrayList<UnmatchedFileData>();
 		
 		for (Integer key : keys)
 		{
@@ -117,13 +140,13 @@ public class FileMatcher
 				
 				List<String>lineList = _fileValidator.getLineAsList(line);
 				
-				unmatchedReport = new UnmatchedReport();
+				UnmatchedFileData = new UnmatchedFileData();
 				
-				unmatchedReport.setDate(lineList.get(1));
-        		unmatchedReport.setAmount(lineList.get(2));
-        		unmatchedReport.setDescription(lineList.get(3));
+				UnmatchedFileData.setDate(lineList.get(1));
+        		UnmatchedFileData.setAmount(lineList.get(2));
+        		UnmatchedFileData.setDescription(lineList.get(3));
         		
-        		unmatchedReportList.add(unmatchedReport);
+        		UnmatchedFileDataList.add(UnmatchedFileData);
 			} 
 			
 			catch (IOException e) 
@@ -133,15 +156,15 @@ public class FileMatcher
 			}
 		}
 		
-		return unmatchedReportList;
+		return UnmatchedFileDataList;
 	}
 	
 	//for each unmatched entry, I must find its date, amount and description
-	public UnmatchedReport getUnmatchedReport(String key, InputStream fileIS)
+	public UnmatchedFileData getUnmatchedFileData(String key, InputStream fileIS)
 	{
 		BufferedReader bf = null;
 		String line;
-		UnmatchedReport unmatchedReport;
+		UnmatchedFileData UnmatchedFileData;
 		
 		_fileValidator = new FileValidator();
 		
@@ -155,13 +178,13 @@ public class FileMatcher
             	
             	if (lineList.get(5).toLowerCase().equals(key.toLowerCase()))
             	{
-            		unmatchedReport = new UnmatchedReport();
+            		UnmatchedFileData = new UnmatchedFileData();
             		
-            		unmatchedReport.setDate(lineList.get(1));
-            		unmatchedReport.setAmount(lineList.get(2));
-            		unmatchedReport.setDescription(lineList.get(3));
+            		UnmatchedFileData.setDate(lineList.get(1));
+            		UnmatchedFileData.setAmount(lineList.get(2));
+            		UnmatchedFileData.setDescription(lineList.get(3));
             		
-            		return unmatchedReport;
+            		return UnmatchedFileData;
             	}
             }
 		}
@@ -189,6 +212,6 @@ public class FileMatcher
             }
         }
 		
-		return new UnmatchedReport();
+		return new UnmatchedFileData();
 	}
 }

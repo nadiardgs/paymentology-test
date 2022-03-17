@@ -6,41 +6,13 @@ public class FileData
 {
 	private String fileName;
 	
-	private String fileTotalRecords;
+	private Integer fileTotalRecords;
 	
-	private String fileTotalMatchingRecords;
+	private Integer fileTotalMatchingRecords;
 	
-	private String fileTotalUnmatchingRecords;
+	private Integer fileTotalUnmatchingRecords;
 	
-	private String fileUnmatchingRecordsPositions;
-	
-	private List<String> fileList;
-	
-	public List<String> getFileList() {
-		return fileList;
-	}
-
-	public void setFileList(List<String> fileList) {
-		this.fileList = fileList;
-	}
-
-	private List<UnmatchedReport> unmatchedReports;
-
-	public List<UnmatchedReport> getUnmatchedReports() {
-		return unmatchedReports;
-	}
-
-	public void setUnmatchedReports(List<UnmatchedReport> unmatchedReports) {
-		this.unmatchedReports = unmatchedReports;
-	}
-
-	public String getFileUnmatchingRecordsPositions() {
-		return fileUnmatchingRecordsPositions;
-	}
-
-	public void setFileUnmatchingRecordsPositions(String fileUnmatchingRecordsPositions) {
-		this.fileUnmatchingRecordsPositions = fileUnmatchingRecordsPositions;
-	}
+	private List<UnmatchedFileData> unmatchedFileDatas;
 
 	public String getFileName() {
 		return fileName;
@@ -50,28 +22,35 @@ public class FileData
 		this.fileName = fileName;
 	}
 
-	public String getFileTotalRecords() {
+	public Integer getFileTotalRecords() {
 		return fileTotalRecords;
 	}
 
-	public void setFileTotalRecords(String fileTotalRecords) {
+	public void setFileTotalRecords(Integer fileTotalRecords) {
 		this.fileTotalRecords = fileTotalRecords;
 	}
 
-	public String getFileTotalMatchingRecords() {
+	public Integer getFileTotalMatchingRecords() {
 		return fileTotalMatchingRecords;
 	}
 
-	public void setFileTotalMatchingRecords(String fileTotalMatchingRecords) {
+	public void setFileTotalMatchingRecords(Integer fileTotalMatchingRecords) {
 		this.fileTotalMatchingRecords = fileTotalMatchingRecords;
 	}
 
-	public String getFileTotalUnmatchingRecords() {
+	public Integer getFileTotalUnmatchingRecords() {
 		return fileTotalUnmatchingRecords;
 	}
 
-	public void setFileTotalUnmatchingRecords(String fileTotalUnmatchingRecords) {
+	public void setFileTotalUnmatchingRecords(Integer fileTotalUnmatchingRecords) {
 		this.fileTotalUnmatchingRecords = fileTotalUnmatchingRecords;
 	}
-	
+
+	public List<UnmatchedFileData> getUnmatchedFileDatas() {
+		return unmatchedFileDatas;
+	}
+
+	public void setUnmatchedFileDatas(List<UnmatchedFileData> unmatchedFileDatas) {
+		this.unmatchedFileDatas = unmatchedFileDatas;
+	}
 }
