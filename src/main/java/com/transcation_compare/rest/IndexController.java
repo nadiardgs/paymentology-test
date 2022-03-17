@@ -3,11 +3,8 @@ package com.transcation_compare.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -101,6 +98,9 @@ public class IndexController {
 			
 			firstFileData.setFileName(firstFileName);
 			secondFileData.setFileName(secondFileName);
+			
+			fileData.clear();
+			unmatchedFileDatas.clear();
 			
 			fileData.add(firstFileData);
 			fileData.add(secondFileData);
