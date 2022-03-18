@@ -18,36 +18,22 @@
 			padding: 30px;
 			text-align: left;
 			font-size: 16px;
+			background-color: bisque
 		}
-
-		/* The grid container */
-		.grid-container {
-			display: grid;
-			grid-template-areas:
-				'header header header header header header'
-				'left left middle middle right right'
-				'footer footer footer footer footer footer';
-		}
-
-		.left,
-		.middle {
+		/* Create two equal columns that floats next to each other */
+		.column {
+			float: left;
+			width: 50%;
 			padding: 10px;
+			background-color:antiquewhite
+			/* Should be removed. Only for demonstration */
 		}
 
-		/* Style the left column */
-		.left {
-			grid-area: left;
-		}
-
-		/* Style the middle column */
-		.middle {
-			grid-area: middle;
-		}
-
-		/* Style the footer */
-		.footer {
-			grid-area: footer;
-			padding: 10px;
+		/* Clear floats after the columns */
+		.row:after {
+			content: "";
+			display: table;
+			clear: both;
 		}
 
 		/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
@@ -78,7 +64,7 @@
 			</div>
 
 
-			<div class="left">
+			<div class="column">
 				<p th:each="file : ${fileData}">
 					File: <span th:text="${file.fileName}"></span>
 					<br>
@@ -87,10 +73,11 @@
 					Matching records: <span th:text="${file.fileTotalMatchingRecords}"></span>
 					<br>
 					Unmatching records: <span th:text="${file.fileTotalUnmatchingRecords}"></span>
+					<br>
 				</p>
 			</div>
 
-			<div class="middle">
+			<div class="column">
 				<p th:each="report : ${umatchedReports}">
 					Date: <span th:text="${report.date}"></span>
 					<br>
@@ -99,9 +86,6 @@
 					Description: <span th:text="${report.description}"></span>
 					<br>
 				</p>
-			</div>
-
-			<div class="footer">
 			</div>
 		</div>
 	</body>

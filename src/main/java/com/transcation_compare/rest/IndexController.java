@@ -78,18 +78,13 @@ public class IndexController {
 
 			HashMap<String, String> firstFileHashMap = _fileValidator.getListAsHashMap(firstFileList);
 			HashMap<String, String> secondFileHashMap = _fileValidator.getListAsHashMap(secondFileList);
-
-			String errorMessage = "Error in file %s: All rows must have data for the column TransactionID";
 			
-			if (firstFileHashMap.isEmpty())
+			if (!checkIfHashMapIsEmpty(firstFileHashMap, firstFileName, redirectAttributes).isEmpty())
 			{
-				redirectAttributes.addFlashAttribute("message", String.format(errorMessage, firstFileName));
 				return REDIRECT;
 			}
-			
-			else if (secondFileHashMap.isEmpty())
+			else if (!checkIfHashMapIsEmpty(secondFileHashMap, secondFileName, redirectAttributes).isEmpty())
 			{
-				redirectAttributes.addFlashAttribute("message", String.format(errorMessage, secondFileName));
 				return REDIRECT;
 			}
 
@@ -111,6 +106,7 @@ public class IndexController {
 				for (FileData file : fileData)
 				{	
 					unmatchedFileDatas.addAll(file.getUnmatchedFileDatas());
+					
 				}
 			}
 		} 
@@ -122,6 +118,18 @@ public class IndexController {
 		}
 
 		return "redirect:/index";
+	}
+	
+	public String checkIfHashMapIsEmpty(HashMap<String, String> hashMap, String fileName, RedirectAttributes redirectAttributes)
+	{
+		String errorMessage = "Error in file %s: All rows must have data for the column TransactionID";
+		
+		if (hashMap.isEmpty())
+		{
+			redirectAttributes.addFlashAttribute("message", String.format(errorMessage, fileName));
+			return errorMessage;
+		}
+		return "";
 	}
 
 	public Integer convertToInteger(String string)
